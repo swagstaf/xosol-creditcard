@@ -114,3 +114,14 @@ End-to-end bootstrap:
 - `ofbiz-recon-demo/` — Helm chart (OFBiz, Postgres, NiFi, Spark, Superset)
 - `values-local.yaml` — resource tuning for a 16‑GB MacBook Pro
 - `scripts/` — helper scripts
+
+
+---
+
+## 🚀 One-click bootstrap
+
+Run everything end-to-end with a single command:
+```bash
+./scripts/run_all.sh
+```
+This will install Homebrew (if needed), install Podman/Minikube/kubectl/Helm, build the OFBiz image, start the cluster, deploy the Helm chart, and print the final next steps (demo data load + port-forwards).
