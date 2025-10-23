@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata: { name: spark-recon-job-jdbc }
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: spark-submit
+          image: {{ .Values.spark.master.image }}
+          command: ["/bin/sh","-c"]
+          args:
+            - >
+              /opt/bitnami/spark/bin/spark-submit --master spark://spark-master:7077
+              --packages org.postgresql:postgresql:42.7.4 /opt/app/recon_jdbc.py
+          volumeMounts:
+            - { name: recon-script, mountPath: /opt/app }
+      volumes:
+        - name: recon-script
+          configMap:
+            name: recon-script-jdbc
+            items: [ { key: recon_jdbc.py, path: recon_jdbc.py } ]

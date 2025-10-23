@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: { name: pg-bootstrap-sql }
+data:
+  bootstrap.sql: |
+    create table if not exists stg_card_txn (
+      merchant text, amount numeric, currency text, ref text, txn_date date, mcc text, classification text
+    );
+    create table if not exists stg_settlement (ref text, amount numeric, currency text, settle_date date);
+    create table if not exists stg_bank (ref text, amount numeric, currency text, post_date date);
+    create table if not exists recon_matched_sets as select 1 where false;
+    create table if not exists recon_exceptions  as select 1 where false;

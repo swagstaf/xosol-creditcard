@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata: { name: pg-init }
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: psql
+          image: bitnami/pgpool:4
+          command: ["/bin/sh","-c"]
+          args: [ "PGPASSWORD=ofbiz psql -h postgresql -U ofbiz -d ofbiz -f /init/bootstrap.sql" ]
+          volumeMounts:
+            - { name: init, mountPath: /init, readOnly: true }
+      volumes:
+        - name: init
+          configMap: { name: pg-bootstrap-sql, items: [ { key: bootstrap.sql, path: bootstrap.sql } ] }

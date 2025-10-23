@@ -1,0 +1,11 @@
+{{- if .Values.ofbiz.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ofbiz-data
+  labels:
+    {{- include "ofbiz-recon-demo.labels" . | nindent 4 }}
+spec:
+  accessModes: [ "ReadWriteOnce" ]
+  resources: { requests: { storage: {{ .Values.ofbiz.persistence.size }} } }
+{{- end }}

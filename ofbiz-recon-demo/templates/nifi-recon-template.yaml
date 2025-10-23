@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: { name: nifi-recon-template }
+data:
+  recon-template.xml: |
+    <template>
+      <name>ofbiz-recon-demo</name>
+      <description>CSV -> Postgres stg_card_txn + InvokeHTTP to OFBiz</description>
+    </template>

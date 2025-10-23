@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: { name: nifi-starter-template }
+data:
+  README.txt: |
+    Import this template via NiFi UI (Templates). It generates a demo CSV, writes to Postgres (stg_card_txn),
+    and POSTS a sample invoice to OFBiz REST (createInvoice).
+  flow-template.xml: |
+    <template>
+      <name>recon-demo-starter</name>
+      <description>Generate -> Convert -> PutDatabaseRecord -> InvokeHTTP</description>
+    </template>

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: ofbiz-recon-demo
+description: OFBiz + NiFi + Spark + Superset + Postgres demo
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

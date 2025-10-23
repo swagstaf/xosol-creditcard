@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata: { name: spark-recon-job }
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: spark-submit
+          image: {{ .Values.spark.master.image }}
+          command: ["/bin/sh","-c"]
+          args:
+            - /opt/bitnami/spark/bin/spark-submit --master spark://spark-master:7077 /opt/app/recon.py
+          volumeMounts:
+            - { name: recon-script, mountPath: /opt/app }
+            - { name: recon-data,   mountPath: /data }
+            - { name: recon-out,    mountPath: /out }
+      volumes:
+        - { name: recon-script, configMap: { name: recon-script, items: [ { key: recon.py, path: recon.py } ] } }
+        - { name: recon-data, emptyDir: {} }
+        - { name: recon-out,  emptyDir: {} }

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: { name: superset-init-sql }
+data:
+  README.txt: |
+    Connect Superset to Postgres at postgresql:5432 (db=user=ofbiz / pass=ofbiz)
+    Build dashboards for recon_matched_sets and recon_exceptions.

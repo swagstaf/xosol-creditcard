@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: { name: ofbiz-rest-examples }
+data:
+  SERVICES.md: |
+    Expose OFBiz services by setting export="true" in services.xml.
+    Example calls:
+    - createInvoice
+    - createPayment
+    - applyPaymentToInvoice
+    Then POST to /rest/services/{serviceName}.

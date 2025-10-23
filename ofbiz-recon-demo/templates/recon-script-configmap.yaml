@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: { name: recon-script }
+data:
+  recon.py: |
+    from pyspark.sql import SparkSession, functions as F
+    spark = SparkSession.builder.appName("recon-demo").getOrCreate()
+    df = spark.read.option("header", True).csv("/data/card_txn.csv")
+    df = df.withColumn("r1_hit", F.lit(1)).withColumn("confidence_score", F.lit(0.9))
+    df.coalesce(1).write.mode("overwrite").option("header", True).csv("/out/matched_sets")
+    spark.stop()

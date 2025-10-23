@@ -1,0 +1,16 @@
+{{- if .Values.nifi.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: nifi-content }
+spec: { accessModes: ["ReadWriteOnce"], resources: { requests: { storage: {{ .Values.nifi.persistence.contentSize }} } } }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: nifi-provenance }
+spec: { accessModes: ["ReadWriteOnce"], resources: { requests: { storage: {{ .Values.nifi.persistence.provenanceSize }} } } }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: nifi-state }
+spec: { accessModes: ["ReadWriteOnce"], resources: { requests: { storage: {{ .Values.nifi.persistence.stateSize }} } } }
+{{- end }}

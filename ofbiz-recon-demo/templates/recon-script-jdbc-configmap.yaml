@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: { name: recon-script-jdbc }
+data:
+  recon_jdbc.py: |
+    import os
+    from pyspark.sql import SparkSession, functions as F
+    host=os.getenv("PG_HOST","postgresql.ofbiz.svc.cluster.local")
+    url=f"jdbc:postgresql://{host}:5432/ofbiz"
+    props={"user":"ofbiz","password":"ofbiz","driver":"org.postgresql.Driver"}
+    spark=SparkSession.builder.appName("recon-jdbc").getOrCreate()
+    card=spark.read.format("jdbc").option("url",url).option("dbtable","stg_card_txn").options(**props).load()
+    matched=card.withColumn("r1_hit",F.lit(1)).withColumn("confidence_score",F.lit(0.9))
+    matched.write.format("jdbc").option("url",url).option("dbtable","recon_matched_sets").options(**props).mode("overwrite").save()
+    spark.stop()

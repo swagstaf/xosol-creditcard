@@ -1,0 +1,7 @@
+Post-install:
+1) Load OFBiz demo data:
+   kubectl exec -n {{ .Release.Namespace }} deploy/ofbiz --          bash -lc "./gradlew --no-daemon 'ofbiz --load-data readers=seed,seed-initial,demo'"
+2) Port-forward:
+   OFBiz:   kubectl port-forward -n {{ .Release.Namespace }} svc/ofbiz 8443:8443
+   NiFi:    kubectl port-forward -n {{ .Release.Namespace }} svc/nifi 8080:8080
+   Superset:kubectl port-forward -n {{ .Release.Namespace }} svc/superset 8088:8088

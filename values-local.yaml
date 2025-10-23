@@ -1,0 +1,38 @@
+ofbiz:
+  image: ofbiz-test:demo
+  javaOpts: "-Xms512m -Xmx1500m"
+  resources:
+    requests: { cpu: "200m", memory: "768Mi" }
+    limits:   { cpu: "1",    memory: "1500Mi" }
+
+postgresql:
+  persistence: { enabled: true, size: 5Gi }
+  auth: { username: ofbiz, password: ofbiz, database: ofbiz }
+  resources:
+    requests: { cpu: "100m", memory: "256Mi" }
+    limits:   { cpu: "500m", memory: "512Mi" }
+
+nifi:
+  env: { NIFI_WEB_HTTP_PORT: "8080" }
+  resources:
+    requests: { cpu: "200m", memory: "768Mi" }
+    limits:   { cpu: "1",    memory: "1500Mi" }
+
+spark:
+  master:
+    resources:
+      requests: { cpu: "100m", memory: "256Mi" }
+      limits:   { cpu: "500m", memory: "512Mi" }
+  worker:
+    replicas: 1
+    resources:
+      requests: { cpu: "200m", memory: "768Mi" }
+      limits:   { cpu: "1",    memory: "1500Mi" }
+
+superset:
+  resources:
+    requests: { cpu: "100m", memory: "256Mi" }
+    limits:   { cpu: "500m", memory: "512Mi" }
+
+ingress:
+  enabled: false
