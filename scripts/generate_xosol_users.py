@@ -71,7 +71,7 @@ for u in URLS:
     except Exception as ex:
         print(f"# WARN: could not parse {u}: {ex}", file=sys.stderr)
 
-print(\"\"\"import org.apache.ofbiz.entity.DelegatorFactory
+print("""import org.apache.ofbiz.entity.DelegatorFactory
 import org.apache.ofbiz.entity.util.EntityQuery
 import org.apache.ofbiz.base.util.UtilDateTime
 
@@ -87,12 +87,12 @@ if (sg == null) {
     logInfo(\"Created SecurityGroup \" + groupId)
 }
 
-def users = [\"\"\")
+def users = [""")
 for first,last,email,phone in people:
     user = slugify_user(first, last)
     phone_js = '\"' + phone.replace('\"','') + '\"' if phone else '\"\"'
     print(f'  [first:\"{first}\", last:\"{last}\", email:\"{email}\", user:\"{user}\", phone:{phone_js}],')
-print(\"\"\"]
+print("""]
 users.each { u ->
   try {
     // Create or update person + login
@@ -133,4 +133,4 @@ users.each { u ->
     logError(\"FAIL ${u.user}: \" + e.getMessage())
   }
 }
-\"\"\")
+""")
