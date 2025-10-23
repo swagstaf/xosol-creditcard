@@ -401,3 +401,14 @@ Example:
 ```bash
 NS=ofbiz-demo DEPLOYMENT=ofbiz-test DEFAULT_PASS="xosol.2025" make add-users
 ```
+
+
+---
+
+## 🚢 Releases (auto-packaging on tags)
+Create a semantic tag to trigger a release build that uploads `.zip` and `.tar.gz` bundles:
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+GitHub Actions will package the repository and publish assets on the Release page.
