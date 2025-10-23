@@ -1,0 +1,47 @@
+#!/bin/zsh
+# Auto path discovery for xosol-creditcard repo with folder picker
+set -euo pipefail
+
+CONF="$HOME/.xosol_repo_path"
+DEFAULT="$HOME/Projects/xosol-creditcard"
+
+get_repo_path() {
+  if [[ -f "$CONF" ]]; then
+    local p
+    p="$(cat "$CONF" | tr -d '\r\n')"
+    if [[ -d "$p" ]]; then
+      echo "$p"
+      return 0
+    fi
+  fi
+
+  # Ask user to pick a folder (AppleScript choose folder)
+  REPLY_PATH="$(osascript <<'APPLES'
+    set theFolder to choose folder with prompt "Select your xosol-creditcard repository folder"
+    POSIX path of theFolder
+APPLES
+)"
+  REPLY_PATH="${REPLY_PATH%/}"
+  if [[ -z "${REPLY_PATH:-}" || ! -d "$REPLY_PATH" ]]; then
+    osascript -e 'display dialog "Invalid folder selected. Please try again." buttons {"OK"} default button 1 with icon caution'
+    exit 1
+  fi
+
+  echo "$REPLY_PATH" > "$CONF"
+  echo "$REPLY_PATH"
+}
+
+REPO="$(get_repo_path)"
+
+if [[ "stop" = "start" ]]; then
+  CMD='cd '"$REPO"' && ./scripts/start_demo.sh'
+else
+  CMD='cd '"$REPO"' && STOP_MINIKUBE=true STOP_PODMAN=false ./scripts/stop_demo.sh'
+fi
+
+osascript <<OSA
+tell application "Terminal"
+  activate
+  do script "$CMD"
+end tell
+OSA

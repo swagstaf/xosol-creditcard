@@ -1,0 +1,29 @@
+#!/bin/zsh
+# Set or change the repo path used by the XOSOL apps.
+set -euo pipefail
+
+CONF="$HOME/.xosol_repo_path"
+CURRENT="(none)"
+[[ -f "$CONF" ]] && CURRENT="$(cat "$CONF" | tr -d '\r\n')"
+
+osascript <<OSA
+display dialog "Current repo path: $CURRENT
+
+Click OK to choose a new repository folder." buttons {"Cancel","OK"} default button "OK" with icon note
+OSA
+
+REPLY_PATH="$(osascript <<'APPLES'
+  set theFolder to choose folder with prompt "Select your xosol-creditcard repository folder"
+  POSIX path of theFolder
+APPLES
+)"
+REPLY_PATH="${REPLY_PATH%/}"
+
+if [[ -z "${REPLY_PATH:-}" || ! -d "$REPLY_PATH" ]]; then
+  osascript -e 'display dialog "Invalid folder selected. No changes made." buttons {"OK"} default button 1 with icon caution'
+  exit 1
+fi
+
+echo "$REPLY_PATH" > "$CONF"
+osascript -e 'display dialog "Saved repository path:\n'\"$REPLY_PATH\"'\n\nYou can now use the Start/Stop apps from Launchpad." buttons {"OK"} default button 1 with icon note'
+exit 0
