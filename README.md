@@ -303,3 +303,100 @@ The script will:
 - verify signatures and print a Gatekeeper assessment.
 
 On first launch you may still need to right‑click → **Open** to approve.
+
+
+## 🧩 Automated XOSOL Employee User Creation
+
+This demo includes automation to populate Apache OFBiz with **realistic user data** pulled directly from the public [XOSOL website](https://xosol.com/).  
+It creates login accounts for everyone listed on:
+
+- [Leadership Team](https://xosol.com/leadership/)
+- [Team of Manufacturing Experts](https://xosol.com/our-team-of-manufacturing-experts/)
+
+All users are assigned to the **`XOSOL_EMPLOYEE`** group and share the default password:
+
+```
+password.1
+```
+
+If the group doesn’t exist, it will be created automatically.
+
+---
+
+### 🔧 How it Works
+
+1. **`scripts/generate_xosol_users.py`**
+   - Scrapes both team pages.
+   - Extracts names, emails, and phone numbers.
+   - Generates a Groovy script that:
+     - Creates or updates users (`createPersonAndUserLogin`).
+     - Ensures membership in the `XOSOL_EMPLOYEE` group.
+     - Adds phone numbers to each party record.
+
+2. **`scripts/create_xosol_users.sh`**
+   - Runs the Python script.
+   - Copies the generated Groovy file into the OFBiz pod or container.
+   - Executes the Groovy script using Gradle.
+
+3. **Makefile Integration**
+   ```bash
+   make add-users
+   ```
+   This one-liner handles the entire flow.
+
+---
+
+### 🧰 Prerequisites
+
+- Kubernetes cluster or Podman-based OFBiz instance running
+- Python 3 with:
+  ```bash
+  pip3 install beautifulsoup4 requests lxml
+  ```
+- `kubectl` configured and pointing to your OFBiz namespace
+
+---
+
+### 🚀 Usage
+
+```bash
+# Run from the project root
+make add-users
+```
+
+This will:
+- Scrape XOSOL’s team pages.
+- Create/update all employee records in OFBiz.
+- Assign them to `XOSOL_EMPLOYEE`.
+- Attach phone numbers where found.
+
+---
+
+### 📂 Resulting Data in OFBiz
+
+Each generated user will have:
+
+| Field | Example |
+|-------|----------|
+| User ID | `john.smith` |
+| Email | `john.smith@xosol.com` |
+| Password | `password.1` |
+| Group | `XOSOL_EMPLOYEE` |
+| Phone | `+14165551234` (if available) |
+
+---
+
+### ⚙️ Optional Configuration
+
+Environment variables that can be set before running `make add-users`:
+
+| Variable | Description | Default |
+|-----------|--------------|----------|
+| `NS` | Kubernetes namespace | `ofbiz` |
+| `DEPLOYMENT` | OFBiz deployment name | `ofbiz` |
+| `DEFAULT_PASS` | Default password for all users | `password.1` |
+
+Example:
+```bash
+NS=ofbiz-demo DEPLOYMENT=ofbiz-test DEFAULT_PASS="xosol.2025" make add-users
+```
