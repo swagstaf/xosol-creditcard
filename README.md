@@ -1,4 +1,5 @@
-# XOSOL Credit Card Reconciliation Demo
+# [![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
+ XOSOL Credit Card Reconciliation Demo
 
 An open-source demonstration showing international credit-card reconciliation using:
 - Apache **OFBiz** (ERP)

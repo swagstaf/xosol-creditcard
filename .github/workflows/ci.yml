@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-generate:
+    name: Lint & Generate Groovy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4 lxml
+
+      - name: Generate Groovy from website scrape
+        run: |
+          python scripts/generate_xosol_users.py > /tmp/xosol_users.groovy
+          ls -lh /tmp/xosol_users.groovy
+          # Sanity checks on the generated file:
+          grep -q "XOSOL_EMPLOYEE" /tmp/xosol_users.groovy
+          grep -q "createPersonAndUserLogin" /tmp/xosol_users.groovy
+          head -n 40 /tmp/xosol_users.groovy
+
+      - name: Upload generated Groovy as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: xosol-users-groovy
+          path: /tmp/xosol_users.groovy
+
+      - name: Shell validation
+        run: |
+          sudo apt-get update && sudo apt-get install -y shellcheck
+          shellcheck -S warning scripts/create_xosol_users.sh
+          bash -n scripts/create_xosol_users.sh
+
+  dry-run-make:
+    name: Makefile dry-run checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      - name: Confirm Make targets exist
+        run: |
+          # We can't run add-users end-to-end in CI without a cluster; 
+          # do a dry-run to confirm the target resolves and the script exists.
+          if grep -q "^add-users" Makefile; then
+            echo "Found add-users target"
+          else
+            echo "::error::add-users target missing in Makefile"; exit 1
+          fi
+          test -x scripts/create_xosol_users.sh || { echo "::error::scripts/create_xosol_users.sh not executable"; exit 1; }
+          # Simulate -n dry-run; ignore failures since environment (kubectl) is absent
+          make -n add-users || true
+
+  macos-compat:
+    name: macOS shell compat (syntax only)
+    runs-on: macos-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      - name: Basic syntax check on scripts
+        run: |
+          bash -n scripts/create_xosol_users.sh
+          # Python available by default; ensure script is at least importable
+          python -m py_compile scripts/generate_xosol_users.py
