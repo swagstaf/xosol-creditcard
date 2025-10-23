@@ -90,3 +90,6 @@ logs-stop:
 
 clean-images:
 	./scripts/clean_images.sh
+
+add-users:
+	./scripts/create_xosol_users.sh
